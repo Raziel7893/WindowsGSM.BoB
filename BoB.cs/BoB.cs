@@ -30,7 +30,6 @@ namespace WindowsGSM.Plugins
         // - Standard Constructor and properties
         public BoB(ServerConfig serverData) : base(serverData) => base.serverData = _serverData = serverData;
         private readonly ServerConfig _serverData;
-        public string Error, Notice;
 
 
         // - Game server Fixed variables
@@ -87,10 +86,13 @@ namespace WindowsGSM.Plugins
 
             // Prepare start parameter
             string param = string.IsNullOrWhiteSpace(_serverData.ServerMap) ? string.Empty : $"{_serverData.ServerMap}?listen";
-            param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $"?MultiHome={_serverData.ServerIP}";
-            param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $"?Port={_serverData.ServerPort}";
-			param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $"?QueryPort={_serverData.ServerQueryPort}";
-            param += $"?{_serverData.ServerParam} -nosteamclient -game -server -log";
+            param += _serverData.ServerParam.StartsWith("?") ? $"{_serverData.ServerParam}" : $" {_serverData.ServerParam} ";
+
+            param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $"-MultiHome={_serverData.ServerIP} ";
+            param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $"-Port={_serverData.ServerPort} ";
+            param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $"-QueryPort={_serverData.ServerQueryPort} ";
+
+            param += "-nosteamclient -game -server -log ";
 
             // Prepare Process
             var p = new Process
